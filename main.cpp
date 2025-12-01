@@ -1,9 +1,13 @@
 #include "stdio.h"
 
+#include "board.h"
+
 int main()
 {
-    printf("Hello world!\n");
-    getchar();
+    SudokuBoard board;
 
+    board.PrintBoard();
+
+    getchar();
     return 0;
 }
