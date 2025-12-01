@@ -37,16 +37,16 @@ void SudokuBoard::PrintBoard() const
 
 const int SudokuBoard::GetValue(const int& row, const int& col) const
 {
-    assert(row > 0 && row <= 9);
-    assert(col > 0 && col <= 9);
+    assert(row >= 0 && row < 9);
+    assert(col >= 0 && col < 9);
 
     return board[row][col];
 }
 
 void SudokuBoard::SetValue(const int& row, const int& col, int newValue)
 {
-    assert(row > 0 && row <= 9);
-    assert(col > 0 && col <= 9);
+    assert(row >= 0 && row < 9);
+    assert(col >= 0 && col < 9);
 
     board[row][col] = newValue;
 }

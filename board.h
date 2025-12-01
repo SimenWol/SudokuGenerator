@@ -6,10 +6,16 @@ class SudokuBoard
 public:
 	SudokuBoard();
 
-	void SetBoard(std::array<std::array<int, 9>, 9>& newBoard) { board = newBoard; }
 	void PrintBoard() const;
+
+	// Getters //
+	const std::array<std::array<int, 9>, 9>& GetBoard() const { return board; }
 	const int GetValue(const int& row, const int& col) const;
+	
+	// Setters //
+	void SetBoard(std::array<std::array<int, 9>, 9>& newBoard) { board = newBoard; }
 	void SetValue(const int& row, const int& col, int newValue);
+	
 	//isValid()
 	//findEmptyCell()
 	//solve()
