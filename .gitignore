@@ -41,6 +41,6 @@
 *.dwo
 
 # Extra
-/Debug
-/Release
+Debug/
+Release/
 .vs
