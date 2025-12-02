@@ -1,5 +1,6 @@
-#include "stdio.h"
+#include <stdio.h>
 #include <iostream>
+#include <chrono>
 
 #include "board.h"
 #include "solver.h"
@@ -19,10 +20,16 @@ int main()
     SudokuSolver solver;
     solver.SetBoard(board);
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     if (solver.SolveBoard())
     {
+        auto stop = std::chrono::high_resolution_clock::now();
+        
         std::cout << "Solution for the given board:\n\n";
         board->PrintBoard();
+
+        std::cout << "\nSolve time (microseconds): " << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << std::endl;
     }
     else
     {
