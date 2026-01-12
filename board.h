@@ -28,6 +28,12 @@ public:
 
 	void PrintBoard() const;
 
+	void RecomputeAllCandidates();
+	void UpdateCandidatesAfterMove(int row, int col);
+	bool IsValidMove(int row, int col, int num) const { return board[row][col].candidates.test(num - 1); };
+
+	bool PlaceNumber(int row, int col, int num);
+
 	// Getters //
 	const std::array<std::array<Cell, 9>, 9>& GetBoard() const { return board; }
 	const int GetValue(const int& row, const int& col) const;
@@ -35,7 +41,10 @@ public:
 	// Setters //
 	void SetBoard(std::array<std::array<Cell, 9>, 9>& newBoard) { board = newBoard; }
 	void SetBoard(std::array<std::array<int, 9>, 9>& newBoard);
-	void SetValue(const int& row, const int& col, int newValue);
+
+//private:
+	/** Places the provided value into the given space. Returns false if cell is locked and the number cannot be placed. */
+	bool SetValue(const int& row, const int& col, int newValue);
 private:
 	std::array<std::array<Cell, 9>, 9> board;
 };

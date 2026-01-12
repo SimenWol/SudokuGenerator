@@ -35,6 +35,63 @@ void SudokuBoard::PrintBoard() const
 	}
 }
 
+void SudokuBoard::RecomputeAllCandidates()
+{
+    // Reset all empty cells
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++)
+            board[i][j].candidates.set();
+
+    // Go through all filled cells and "apply the move"
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++)
+            UpdateCandidatesAfterMove(i, j);
+}
+
+void SudokuBoard::UpdateCandidatesAfterMove(int row, int col)
+{
+    const int value = board[row][col].value;
+    if (value == 0) return;
+
+    int index = value - 1;
+
+    // Set filled space to empty as move has been validated
+    board[row][col].candidates.reset();
+
+    // Row / column
+    for (int i = 0; i < 9; i++)
+    {
+        board[row][i].candidates.reset(index);
+        board[i][col].candidates.reset(index);
+    }
+
+    // Subgrid
+    int sr = row - row % 3;
+    int sc = col - col % 3;
+
+    for (int r = 0; r < 3; r++)
+        for (int c = 0; c < 3; c++)
+            board[sr + r][sc + c].candidates.reset(index);
+}
+
+bool SudokuBoard::PlaceNumber(int row, int col, int num)
+{
+    assert(num >= 0 && num < 10);
+    assert(row >= 0 && row < 9);
+    assert(col >= 0 && col < 9);
+
+    if (board[row][col].locked) { return false; }
+    if (!IsValidMove(row, col, num)) { return false; }
+
+    board[row][col].value = num;
+    board[row][col].candidates.reset();
+    board[row][col].candidates.set(num - 1);
+
+    UpdateCandidatesAfterMove(row, col);
+
+    return true;
+}
+
 const int SudokuBoard::GetValue(const int& row, const int& col) const
 {
     assert(row >= 0 && row < 9);
@@ -56,16 +113,21 @@ void SudokuBoard::SetBoard(std::array<std::array<int, 9>, 9>& newBoard)
             if (board[i][j].locked)
             {
                 board[i][j].candidates.reset();
-                board[i][j].candidates.set(newBoard[i][j] - 1);
             }
         }
     }
+
+    RecomputeAllCandidates();
 }
 
-void SudokuBoard::SetValue(const int& row, const int& col, int newValue)
+bool SudokuBoard::SetValue(const int& row, const int& col, int newValue)
 {
     assert(row >= 0 && row < 9);
     assert(col >= 0 && col < 9);
+    assert(newValue >= 0 && newValue < 10);
+
+    if (board[row][col].locked) { return false; }
 
     board[row][col].value = newValue;
+    return true;
 }
