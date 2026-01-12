@@ -30,7 +30,10 @@ public:
 
 	void RecomputeAllCandidates();
 	void UpdateCandidatesAfterMove(int row, int col);
-	bool IsValidMove(int row, int col, int num) const { return board[row][col].candidates.test(num - 1); };
+	bool IsValidMove(int row, int col, int num) const { return board[row][col].value == 0 && board[row][col].candidates.test(num - 1); };
+
+	bool IsSolved();
+	bool HasContradiction();
 
 	bool PlaceNumber(int row, int col, int num);
 
@@ -44,7 +47,7 @@ public:
 
 //private:
 	/** Places the provided value into the given space. Returns false if cell is locked and the number cannot be placed. */
-	bool SetValue(const int& row, const int& col, int newValue);
+	bool SetValue(const int& row, const int& col, int newValue); // to be removed
 private:
 	std::array<std::array<Cell, 9>, 9> board;
 };
