@@ -1,6 +1,29 @@
 #include "solver.h"
 #include "board.h"
 
+bool SudokuSolver::Solve()
+{
+	while (true)
+	{
+		bool progress = false;
+		
+		for (auto& strategy : strategies)
+		{
+			if (strategy->Apply(*board))
+			{
+				progress = true;
+				break;
+			}
+		}
+
+		if (!progress)
+			break;
+	}
+
+	//return board->IsSolved() || BackTrackingSolve();
+	return board->IsSolved();
+}
+
 bool SudokuSolver::SolveBoard()
 {
 	int row, col;
