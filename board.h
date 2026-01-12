@@ -34,6 +34,7 @@ public:
 	
 	// Setters //
 	void SetBoard(std::array<std::array<Cell, 9>, 9>& newBoard) { board = newBoard; }
+	void SetBoard(std::array<std::array<int, 9>, 9>& newBoard);
 	void SetValue(const int& row, const int& col, int newValue);
 private:
 	std::array<std::array<Cell, 9>, 9> board;
