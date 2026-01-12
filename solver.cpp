@@ -38,7 +38,7 @@ bool SudokuSolver::IsValid(const int& row, const int& col, const int& num)
 	// Check row & column
 	for (int x = 0; x < currBoard.size(); x++)
 	{
-		if (currBoard[row][x] == num || currBoard[x][col] == num)
+		if (currBoard[row][x].value == num || currBoard[x][col].value == num)
 		{
 			return false;
 		}
@@ -52,7 +52,7 @@ bool SudokuSolver::IsValid(const int& row, const int& col, const int& num)
 	{
 		for (int c = 0; c < 3; c++)
 		{
-			if (currBoard[startRow + r][startCol + c] == num)
+			if (currBoard[startRow + r][startCol + c].value == num)
 			{
 				return false;
 			}
@@ -71,7 +71,7 @@ bool SudokuSolver::FindEmptyCell(int& row, int& col)
 	{
 		for (col = 0; col < boardSize; col++)
 		{
-			if (currBoard[row][col] == 0)
+			if (currBoard[row][col].value == 0)
 			{
 				return true;
 			}
