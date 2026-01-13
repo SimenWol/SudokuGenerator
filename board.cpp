@@ -6,19 +6,34 @@
 SudokuBoard::SudokuBoard()
 {
     // Temporary template board
-    std::array<std::array<int, 9>, 9> templ = { {
-        {5,3,0, 0,7,0, 0,0,0},
-        {6,0,0, 1,9,5, 0,0,0},
-        {0,9,8, 0,0,0, 0,6,0},
+    //std::array<std::array<int, boardSize>, boardSize> templ = { {
+    //    {5,3,0, 0,7,0, 0,0,0},
+    //    {6,0,0, 1,9,5, 0,0,0},
+    //    {0,9,8, 0,0,0, 0,6,0},
 
-        {8,0,0, 0,6,0, 0,0,3},
-        {4,0,0, 8,0,3, 0,0,1},
-        {7,0,0, 0,2,0, 0,0,6},
+    //    {8,0,0, 0,6,0, 0,0,3},
+    //    {4,0,0, 8,0,3, 0,0,1},
+    //    {7,0,0, 0,2,0, 0,0,6},
 
-        {0,6,0, 0,0,0, 2,8,0},
-        {0,0,0, 4,1,9, 0,0,5},
-        {0,0,0, 0,8,0, 0,7,9}
-    } };
+    //    {0,6,0, 0,0,0, 2,8,0},
+    //    {0,0,0, 4,1,9, 0,0,5},
+    //    {0,0,0, 0,8,0, 0,7,9}
+    //} };
+
+    // Solvable by just applying naked singles
+    std::array<std::array<int, boardSize>, boardSize> templ = { {
+    {5,3,0, 6,7,8, 9,1,2},
+    {6,7,2, 1,9,5, 3,4,8},
+    {1,9,8, 3,4,2, 5,6,7},
+
+    {8,5,9, 7,6,1, 4,2,3},
+    {4,0,6, 8,0,3, 7,9,1},
+    {7,1,3, 9,2,4, 8,5,6},
+
+    {9,0,1, 5,3,7, 2,8,4},
+    {2,8,7, 4,0,0, 6,3,5},
+    {3,4,5, 2,8,6, 1,7,9}
+} };
 
     SetBoard(templ);
 };
@@ -38,9 +53,9 @@ void SudokuBoard::PrintBoard() const
 void SudokuBoard::RecomputeAllCandidates()
 {
     // Reset all empty cells
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < boardSize; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < boardSize; j++)
         {
             if (board[i][j].value == 0)
             {
@@ -55,8 +70,8 @@ void SudokuBoard::RecomputeAllCandidates()
     }
 
     // Go through all filled cells and "apply the move"
-    for (int i = 0; i < 9; i++)
-        for (int j = 0; j < 9; j++)
+    for (int i = 0; i < boardSize; i++)
+        for (int j = 0; j < boardSize; j++)
             UpdateCandidatesAfterMove(i, j);
 }
 
@@ -72,7 +87,7 @@ void SudokuBoard::UpdateCandidatesAfterMove(int row, int col)
     board[row][col].candidates.set(index);
 
     // Row / column
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < boardSize; i++)
     {
         if (board[row][i].value == 0) { board[row][i].candidates.reset(index); }
         if (board[i][col].value == 0) { board[i][col].candidates.reset(index); }
@@ -114,8 +129,8 @@ bool SudokuBoard::HasContradiction()
 bool SudokuBoard::PlaceNumber(int row, int col, int num)
 {
     assert(num >= 0 && num < 10);
-    assert(row >= 0 && row < 9);
-    assert(col >= 0 && col < 9);
+    assert(row >= 0 && row < boardSize);
+    assert(col >= 0 && col < boardSize);
 
     if (board[row][col].locked) { return false; }
     if (!IsValidMove(row, col, num)) { return false; }
@@ -130,17 +145,17 @@ bool SudokuBoard::PlaceNumber(int row, int col, int num)
 
 const int SudokuBoard::GetValue(const int& row, const int& col) const
 {
-    assert(row >= 0 && row < 9);
-    assert(col >= 0 && col < 9);
+    assert(row >= 0 && row < boardSize);
+    assert(col >= 0 && col < boardSize);
 
     return board[row][col].value;
 }
 
 void SudokuBoard::SetBoard(std::array<std::array<int, 9>, 9>& newBoard)
 {
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < boardSize; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < boardSize; j++)
         {
             board[i][j].value = newBoard[i][j];
             board[i][j].locked = (newBoard[i][j] != 0);
@@ -159,8 +174,8 @@ void SudokuBoard::SetBoard(std::array<std::array<int, 9>, 9>& newBoard)
 
 bool SudokuBoard::SetValue(const int& row, const int& col, int newValue)
 {
-    assert(row >= 0 && row < 9);
-    assert(col >= 0 && col < 9);
+    assert(row >= 0 && row < boardSize);
+    assert(col >= 0 && col < boardSize);
     assert(newValue >= 0 && newValue < 10);
 
     if (board[row][col].locked) { return false; }

@@ -22,7 +22,8 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    if (solver.SolveBoard())
+    //if (solver.SolveBoard())
+    if (solver.Solve())
     {
         auto stop = std::chrono::high_resolution_clock::now();
         

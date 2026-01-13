@@ -1,6 +1,12 @@
 #include "solver.h"
 #include "board.h"
 
+void SudokuSolver::PopulateStrategies()
+{
+	NakedSingleStrategy nakedSingle;
+	strategies.push_back(std::make_unique<NakedSingleStrategy>(nakedSingle));
+}
+
 bool SudokuSolver::Solve()
 {
 	while (true)

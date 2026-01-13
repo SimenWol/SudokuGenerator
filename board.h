@@ -48,6 +48,9 @@ public:
 //private:
 	/** Places the provided value into the given space. Returns false if cell is locked and the number cannot be placed. */
 	bool SetValue(const int& row, const int& col, int newValue); // to be removed
+
+public:
+	static constexpr int boardSize = 9;
 private:
 	std::array<std::array<Cell, 9>, 9> board;
 };

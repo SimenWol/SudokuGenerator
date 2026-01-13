@@ -2,19 +2,17 @@
 #include <memory>
 #include <vector>
 
-class SudokuBoard;
+#include "solve_strategies.h"
 
-class SolveStrategy
-{
-public:
-	virtual bool Apply(SudokuBoard& board) = 0;
-};
+class SudokuBoard;
 
 class SudokuSolver
 {
 public:
-	SudokuSolver() {};
-	SudokuSolver(std::shared_ptr<SudokuBoard> brd) { SetBoard(brd); };
+	SudokuSolver() { PopulateStrategies(); };
+	SudokuSolver(std::shared_ptr<SudokuBoard> brd) { SetBoard(brd); PopulateStrategies(); };
+
+	void PopulateStrategies();
 
 	bool Solve();
 
