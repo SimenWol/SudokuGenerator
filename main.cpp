@@ -35,6 +35,9 @@ int main()
     else
     {
         std::cout << "No solution exists for the given board" << std::endl;
+
+        std::cout << "Solver got this far:\n\n";
+        board->PrintBoard();
     }
 
     getchar();

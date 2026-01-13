@@ -5,6 +5,9 @@ void SudokuSolver::PopulateStrategies()
 {
 	NakedSingleStrategy nakedSingle;
 	strategies.push_back(std::make_unique<NakedSingleStrategy>(nakedSingle));
+
+	HiddenSingleStrategy hiddenSingle;
+	strategies.push_back(std::make_unique<HiddenSingleStrategy>(hiddenSingle));
 }
 
 bool SudokuSolver::Solve()
