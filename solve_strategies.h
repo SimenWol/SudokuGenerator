@@ -25,3 +25,15 @@ private:
 	bool CheckColumns(SudokuBoard& board);
 	bool CheckBoxes(SudokuBoard& board);
 };
+
+// Pointing pair/triple - WIP
+class PointingPairTripleStrategy : public SolveStrategy
+{
+public:
+	bool Apply(SudokuBoard& board) override { return BoxToRow(board) || BoxToColumn(board); }
+private:
+	bool BoxToRow(SudokuBoard& board);
+	bool BoxToColumn(SudokuBoard& board);
+};
+
+// TBA claiming pair/triple

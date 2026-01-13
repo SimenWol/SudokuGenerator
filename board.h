@@ -32,6 +32,8 @@ public:
 	void UpdateCandidatesAfterMove(int row, int col);
 	bool IsValidMove(int row, int col, int num) const { return board[row][col].value == 0 && board[row][col].candidates.test(num - 1); };
 
+	bool RemoveCandidate(int row, int col, int num);
+
 	bool IsSolved();
 	bool HasContradiction();
 

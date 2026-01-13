@@ -1,5 +1,6 @@
 #include "solve_strategies.h"
 #include "board.h"
+#include <iostream>
 
 bool NakedSingleStrategy::Apply(SudokuBoard& board)
 {
@@ -14,11 +15,12 @@ bool NakedSingleStrategy::Apply(SudokuBoard& board)
 
 			if (cell.value == 0 && cell.candidates.count() == 1)
 			{
-				for (int n = 0; n < 9; n++)
+				for (int num = 0; num < 9; num++)
 				{
-					if (cell.candidates.test(n))
+					if (cell.candidates.test(num))
 					{
-						board.PlaceNumber(row, col, n + 1);
+						board.PlaceNumber(row, col, num + 1);
+						std::cout << "Naked Single: " << num << " from (" << row << "," << col << "\n";
 						return true;
 					}
 				}
@@ -58,6 +60,7 @@ bool HiddenSingleStrategy::CheckRows(SudokuBoard& board)
 			if (foundCol != -1)
 			{
 				board.PlaceNumber(row, foundCol, num);
+				std::cout << "Hidden Single: " << num << " from (" << row << "," << foundCol << "\n";
 				return true;
 			}
 		}
@@ -94,6 +97,7 @@ bool HiddenSingleStrategy::CheckColumns(SudokuBoard& board)
 
 			if (foundRow != -1)
 			{
+				std::cout << "Hidden Single: " << num << " from (" << foundRow << "," << col << "\n";
 				board.PlaceNumber(foundRow, col, num);
 				return true;
 			}
@@ -142,6 +146,7 @@ bool HiddenSingleStrategy::CheckBoxes(SudokuBoard& board)
 
 				if (foundRow != -1)
 				{
+					std::cout << "Hidden Single: " << num << " from (" << foundRow << "," << foundCol << "\n";
 					board.PlaceNumber(foundRow, foundCol, num);
 					return true;
 				}
@@ -153,4 +158,110 @@ bool HiddenSingleStrategy::CheckBoxes(SudokuBoard& board)
 
 	// No hidden single found
 	return false;
+}
+
+bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
+{
+	auto& grid = board.GetBoard();
+	bool changed = false;
+
+	for (int br = 0; br < 3; br++)
+	{
+		for (int bc = 0; bc < 3; bc++)
+		{
+			for (int num = 1; num <= 3; num++)
+			{
+				int targetRow = -1;
+
+				for (int row = 0; row < 3; row++)
+				{
+					for (int col = 0; col < 3; col++)
+					{
+						int rr = br * 3 + row;
+						int cc = bc * 3 + col;
+
+						const Cell& cell = grid[rr][cc];
+
+						if (cell.value == 0 && cell.candidates.test(num - 1))
+						{
+							if (targetRow == -1) { targetRow = rr; }
+							else if (targetRow != rr) { goto next_number; }
+						}
+					}
+				}
+
+				if (targetRow != -1)
+				{
+					for (int col = 0; col < board.boardSize; col++)
+					{
+						const Cell& cell = grid[targetRow][col];
+
+						if (col / 3 != bc && cell.value == 0 && cell.candidates.test(num - 1))
+						{
+							std::cout << "Locked candidate eliminated: " << num << " from (" << targetRow << "," << col << "\n";
+							board.RemoveCandidate(targetRow, col, num);
+							changed = true;
+						}
+					}
+				}
+
+			next_number:;
+			}
+		}
+	}
+
+	return changed;
+}
+
+bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
+{
+	auto& grid = board.GetBoard();
+	bool changed = false;
+
+	for (int bc = 0; bc < 3; bc++)
+	{
+		for (int br = 0; br < 3; br++)
+		{
+			for (int num = 1; num <= 3; num++)
+			{
+				int targetCol = -1;
+
+				for (int col = 0; col < 3; col++)
+				{
+					for (int row = 0; row < 3; row++)
+					{
+						int rr = br * 3 + row;
+						int cc = bc * 3 + col;
+
+						const Cell& cell = grid[rr][cc];
+
+						if (cell.value == 0 && cell.candidates.test(num - 1))
+						{
+							if (targetCol == -1) { targetCol = cc; }
+							else if (targetCol != cc) { goto next_number; }
+						}
+					}
+				}
+
+				if (targetCol != -1)
+				{
+					for (int row = 0; row < board.boardSize; row++)
+					{
+						const Cell& cell = grid[row][targetCol];
+
+						if (row / 3 != br && cell.value == 0 && cell.candidates.test(num - 1))
+						{
+							std::cout << "Locked candidate eliminated: " << num << " from (" << row << "," << targetCol << "\n";
+							board.RemoveCandidate(row, targetCol, num);
+							changed = true;
+						}
+					}
+				}
+
+			next_number:;
+			}
+		}
+	}
+
+	return changed;
 }
