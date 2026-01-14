@@ -16,7 +16,7 @@ public:
 	SudokuSolver(std::shared_ptr<SudokuBoard> brd) { SetBoard(brd); PopulateStrategies(); };
 
 	/** Solve the provided sudoku board. */
-	bool Solve();
+	bool Solve(bool UseBacktrackingWhenStuck = true);
 	
 	/** Updates the board used by the solver to the provided one. */
 	void SetBoard(std::shared_ptr<SudokuBoard> newBoard) { board = newBoard; }

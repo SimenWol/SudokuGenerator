@@ -22,21 +22,20 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    //if (solver.SolveBoard())
-    if (solver.Solve())
+    if (solver.Solve(/*false*/))
     {
         auto stop = std::chrono::high_resolution_clock::now();
         
-        std::cout << "Solution for the given board:\n\n";
+        std::cout << "\nSolution for the given board:\n\n";
         board->PrintBoard();
 
         std::cout << "\nSolve time (microseconds): " << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << std::endl;
     }
     else
     {
-        std::cout << "No solution exists for the given board" << std::endl;
+        std::cout << "\nNo solution exists for the given board" << std::endl;
 
-        std::cout << "Solver got this far:\n\n";
+        std::cout << "\nSolver got this far:\n\n";
         board->PrintBoard();
     }
 

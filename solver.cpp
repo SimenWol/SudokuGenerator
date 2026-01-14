@@ -2,15 +2,17 @@
 #include "board.h"
 #include <iostream>
 
-bool SudokuSolver::Solve()
+bool SudokuSolver::Solve(bool UseBacktrackingWhenStuck)
 {
 	if (SolveLogical())
 	{
 		if (board->IsSolved()) { return true; }
 
-		std::cout << "\n\nLogical solve failed, using backtracking fallback now.\n\n";
-
-		return SolveBacktracking();
+		if (UseBacktrackingWhenStuck)
+		{
+			std::cout << "\n\nLogical solve failed, using backtracking fallback now.\n\n";
+			return SolveBacktracking();
+		}
 	}
 
 	return false;
@@ -67,22 +69,23 @@ bool SudokuSolver::SolveBacktracking()
 
 	if (bestRow == -1) { return false; }
 
-	auto savedBoard = *board;
-
 	for (int num = 1; num <= 9; num++)
 	{
 		if (grid[bestRow][bestCol].candidates.test(num - 1))
 		{
-			*board = savedBoard;
+			auto snapshot = *board;
 
 			if (board->PlaceNumber(bestRow, bestCol, num))
 			{
+				std::cout << "Backtracking: placing number " << num << " at location (" << bestRow << "," << bestCol << ")\n";
 				if (SolveBacktracking()) { return true; }
 			}
+
+			*board = snapshot;
 		}
 	}
 
-	*board = savedBoard;
+	std::cout << "Backtracking: taking a step back\n";
 	return false;
 }
 
