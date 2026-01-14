@@ -1,4 +1,6 @@
 #pragma once
+#include "unit_helpers.h"
+
 // Helpful resource: https://hodoku.sourceforge.net/en/techniques.php
 
 class SudokuBoard;
@@ -20,11 +22,9 @@ public:
 class HiddenSingleStrategy : public SolveStrategy
 {
 public:
-	bool Apply(SudokuBoard& board) override { return CheckRows(board) || CheckColumns(board) || CheckBoxes(board); }
+	bool Apply(SudokuBoard& board) override { return HiddenSingleInUnit(board, UnitType::Row) || HiddenSingleInUnit(board, UnitType::Column) || HiddenSingleInUnit(board, UnitType::Box); }
 private:
-	bool CheckRows(SudokuBoard& board);
-	bool CheckColumns(SudokuBoard& board);
-	bool CheckBoxes(SudokuBoard& board);
+	bool HiddenSingleInUnit(SudokuBoard& board, UnitType type);
 };
 
 /** Solving technique where it finds candidates of the same digit that are confined to a row or column within a block,
