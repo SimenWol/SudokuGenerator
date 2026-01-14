@@ -4,21 +4,26 @@
 
 #include "board.h"
 #include "solver.h"
+#include "board_generator.h"
 
 int main()
 {
-    SudokuBoard brd;
-    std::shared_ptr<SudokuBoard> board = std::make_shared<SudokuBoard>(brd);
+    BoardGenerator generator;
 
-    std::cout << "Initial board:\n\n";
+    auto board = std::make_shared<SudokuBoard>(generator.GenerateSolvedBoard());
 
+    std::cout << "Generated board:\n\n";
     board->PrintBoard();
-    std::cout << "\n\n\n";
+
+    generator.DigPuzzle(*board, 25);
+
+    std::cout << "\n\nGenerated puzzle:\n\n";
+    board->PrintBoard();
+    std::cout << "\n\n";
 
     getchar();
 
-    SudokuSolver solver;
-    solver.SetBoard(board);
+    SudokuSolver solver(board);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -26,14 +31,14 @@ int main()
     {
         auto stop = std::chrono::high_resolution_clock::now();
         
-        std::cout << "\nSolution for the given board:\n\n";
+        std::cout << "\nSolution:\n\n";
         board->PrintBoard();
 
         std::cout << "\nSolve time (microseconds): " << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << std::endl;
     }
     else
     {
-        std::cout << "\nNo solution exists for the given board" << std::endl;
+        std::cout << "\nNo solution exists!" << std::endl;
 
         std::cout << "\nSolver got this far:\n\n";
         board->PrintBoard();

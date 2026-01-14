@@ -101,6 +101,31 @@ bool SudokuBoard::HasContradiction()
     return false;
 }
 
+void SudokuBoard::RecomputeAllCandidates()
+{
+    // Reset all empty cells
+    for (int i = 0; i < boardSize; i++)
+    {
+        for (int j = 0; j < boardSize; j++)
+        {
+            if (board[i][j].value == 0)
+            {
+                board[i][j].candidates.set();
+            }
+            else
+            {
+                board[i][j].candidates.reset();
+                board[i][j].candidates.set(board[i][j].value - 1);
+            }
+        }
+    }
+
+    // Go through all filled cells and "apply the move"
+    for (int i = 0; i < boardSize; i++)
+        for (int j = 0; j < boardSize; j++)
+            UpdateCandidatesAfterMove(i, j);
+}
+
 bool SudokuBoard::PlaceNumber(int row, int col, int num)
 {
     assert(num >= 0 && num < 10);
@@ -130,6 +155,31 @@ bool SudokuBoard::RemoveCandidate(int row, int col, int num)
     return false;
 }
 
+void SudokuBoard::SetValue(int row, int col, int num, bool isLocked)
+{
+    assert(num >= 0 && num < 10);
+    assert(row >= 0 && row < boardSize);
+    assert(col >= 0 && col < boardSize);
+
+    if (isLocked && num != 0) { board[row][col].locked = true; }
+    else { board[row][col].locked = false; }
+
+    board[row][col].value = num;
+
+    RecomputeAllCandidates();
+}
+
+int SudokuBoard::CountClues() const
+{
+    int count = 0;
+
+    for (int r = 0; r < 9; r++)
+        for (int c = 0; c < 9; c++)
+            if (board[r][c].value != 0) { count++; }
+
+    return count;
+}
+
 void SudokuBoard::SetBoard(std::array<std::array<int, 9>, 9>& newBoard)
 {
     for (int i = 0; i < boardSize; i++)
@@ -149,31 +199,6 @@ void SudokuBoard::SetBoard(std::array<std::array<int, 9>, 9>& newBoard)
     }
 
     RecomputeAllCandidates();
-}
-
-void SudokuBoard::RecomputeAllCandidates()
-{
-    // Reset all empty cells
-    for (int i = 0; i < boardSize; i++)
-    {
-        for (int j = 0; j < boardSize; j++)
-        {
-            if (board[i][j].value == 0)
-            {
-                board[i][j].candidates.set();
-            }
-            else
-            {
-                board[i][j].candidates.reset();
-                board[i][j].candidates.set(board[i][j].value - 1);
-            }
-        }
-    }
-
-    // Go through all filled cells and "apply the move"
-    for (int i = 0; i < boardSize; i++)
-        for (int j = 0; j < boardSize; j++)
-            UpdateCandidatesAfterMove(i, j);
 }
 
 void SudokuBoard::UpdateCandidatesAfterMove(int row, int col)

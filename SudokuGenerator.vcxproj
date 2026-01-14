@@ -124,12 +124,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="board.cpp" />
+    <ClCompile Include="board_generator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="solver.cpp" />
     <ClCompile Include="solve_strategies.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
+    <ClInclude Include="board_generator.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="solve_strategies.h" />
     <ClInclude Include="unit_helpers.h" />
