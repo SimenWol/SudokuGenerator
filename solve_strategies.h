@@ -69,3 +69,12 @@ class HiddenPairStrategy : public SolveStrategy
 public:
 	bool Apply(SudokuBoard& board) override;
 };
+
+/** Solving technique where it finds three cells in a block/row/column that only contains 3 candidates of the same kind,
+* eliminating those digits in other cells of the same block/row/column.
+*/
+class NakedTripleStrategy : public SolveStrategy
+{
+public:
+	bool Apply(SudokuBoard& board) override;
+};

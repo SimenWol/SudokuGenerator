@@ -443,3 +443,79 @@ bool HiddenPairStrategy::Apply(SudokuBoard& board)
 	// No hidden pair found
 	return false;
 }
+
+bool NakedTripleStrategy::Apply(SudokuBoard& board)
+{
+	const auto& grid = board.GetBoard();
+
+	for (UnitType type : {UnitType::Row, UnitType::Column, UnitType::Box})
+	{
+		for (int unit = 0; unit < 9; unit++)
+		{
+			auto cells = GetUnit(type, unit);
+
+			// Collect candidate cells with 2 or 3 candidates
+			std::vector<CellPos> candidates;
+			for (const auto& cellPair : cells)
+			{
+				int r = cellPair.first;
+				int c = cellPair.second;
+				const Cell& cell = grid[r][c];
+
+				if (cell.value == 0 && cell.candidates.count() >= 2 && cell.candidates.count() <= 3) { candidates.emplace_back(r, c); }
+			}
+
+			// Check all possible triples
+			for (size_t i = 0; i < candidates.size(); i++)
+			for (size_t j = i + 1; j < candidates.size(); j++)
+			for (size_t k = j + 1; k < candidates.size(); k++)
+			{
+				int r1 = candidates[i].first;
+				int c1 = candidates[i].second;
+
+				int r2 = candidates[j].first;
+				int c2 = candidates[j].second;
+
+				int r3 = candidates[k].first;
+				int c3 = candidates[k].second;
+
+				std::bitset<9> unionSet =
+					grid[r1][c1].candidates |
+					grid[r2][c2].candidates |
+					grid[r3][c3].candidates;
+
+				if (unionSet.count() != 3) { continue; }
+
+				// Eliminate frmo other cells in unit
+				for (const auto& cellPair : cells)
+				{
+					int r = cellPair.first;
+					int c = cellPair.second;
+
+					if ((r == r1 && c == c1) ||
+						(r == r2 && c == c2) ||
+						(r == r3 && c == c3))
+					{
+						continue;
+					}
+
+					for (int num = 1; num <= 9; num++)
+					{
+						if (unionSet.test(num - 1))
+						{
+							if (board.RemoveCandidate(r, c, num))
+							{
+								std::cout << "Naked triple: candidate eliminated: " << num << " from (" << (r + 1) << "," << (c + 1) << ")\n";
+
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// No naked triple found
+	return false;
+}
