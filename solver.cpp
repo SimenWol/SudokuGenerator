@@ -2,18 +2,21 @@
 #include "board.h"
 #include <iostream>
 
-void SudokuSolver::PopulateStrategies()
+bool SudokuSolver::Solve()
 {
-	strategies.push_back(std::make_unique<NakedSingleStrategy>());
-	strategies.push_back(std::make_unique<HiddenSingleStrategy>());
-	strategies.push_back(std::make_unique<PointingPairTripleStrategy>());
-	strategies.push_back(std::make_unique<ClaimingPairTripleStrategy>());
-	strategies.push_back(std::make_unique<NakedPairStrategy>());
-	strategies.push_back(std::make_unique<HiddenPairStrategy>());
-	strategies.push_back(std::make_unique<NakedTripleStrategy>());
+	if (SolveLogical())
+	{
+		if (board->IsSolved()) { return true; }
+
+		std::cout << "\n\nLogical solve failed, using backtracking fallback now.\n\n";
+
+		return SolveBacktracking();
+	}
+
+	return false;
 }
 
-bool SudokuSolver::Solve()
+bool SudokuSolver::SolveLogical()
 {
 	while (true)
 	{
@@ -24,95 +27,72 @@ bool SudokuSolver::Solve()
 			if (strategy->Apply(*board))
 			{
 				if (board->HasContradiction()) { std::cout << "Contradiction detected!\n\n"; return false; }
+				
 				progress = true;
 				break;
 			}
 		}
 
-		if (!progress)
-			break;
-	}
-
-	//return board->IsSolved() || BackTrackingSolve();
-	return board->IsSolved();
-}
-
-bool SudokuSolver::SolveBoard()
-{
-	int row, col;
-
-	// All cells occupied -> solved
-	if (!FindEmptyCell(row, col))
-	{
-		return true;
-	}
-
-	// Solve through backtracking (bruteforce solution)
-	for (int num = 1; num <= 9; num++)
-	{
-		if (IsValid(row, col, num))
-		{
-			board->SetValue(row, col, num);
-
-			if (SolveBoard())
-			{
-				return true;
-			}
-
-			// Backtrack
-			board->SetValue(row, col, 0);
-		}
-	}
-
-	return false;
-}
-
-bool SudokuSolver::IsValid(const int& row, const int& col, const int& num)
-{
-	auto currBoard = board->GetBoard();
-
-	// Check row & column
-	for (int x = 0; x < currBoard.size(); x++)
-	{
-		if (currBoard[row][x].value == num || currBoard[x][col].value == num)
-		{
-			return false;
-		}
-	}
-
-	// Check 3x3 subgrid
-	int startRow = row - row % 3;
-	int startCol = col - col % 3;
-
-	for (int r = 0; r < 3; r++)
-	{
-		for (int c = 0; c < 3; c++)
-		{
-			if (currBoard[startRow + r][startCol + c].value == num)
-			{
-				return false;
-			}
-		}
+		if (!progress) { break; }
 	}
 
 	return true;
 }
 
-bool SudokuSolver::FindEmptyCell(int& row, int& col)
+bool SudokuSolver::SolveBacktracking()
 {
-	auto& currBoard = board->GetBoard();
-	const size_t boardSize = currBoard.size();
+	if (!SolveLogical()) { return false; }
+	if (board->IsSolved()) { return true; }
 
-	for (row = 0; row < boardSize; row++)
+	// Find cell with fewest candidates
+	int bestRow = -1, bestCol = -1;
+	size_t bestCount = 10;
+
+	const auto& grid = board->GetBoard();
+	for (int r = 0; r < 9; r++)
+	for (int c = 0; c < 9; c++)
 	{
-		for (col = 0; col < boardSize; col++)
+		const Cell& cell = grid[r][c];
+		if (cell.value == 0)
 		{
-			if (currBoard[row][col].value == 0)
+			size_t count = cell.candidates.count();
+			if (count < bestCount)
 			{
-				return true;
+				bestCount = count;
+				bestRow = r;
+				bestCol = c;
 			}
 		}
 	}
 
+	if (bestRow == -1) { return false; }
+
+	auto savedBoard = *board;
+
+	for (int num = 1; num <= 9; num++)
+	{
+		if (grid[bestRow][bestCol].candidates.test(num - 1))
+		{
+			*board = savedBoard;
+
+			if (board->PlaceNumber(bestRow, bestCol, num))
+			{
+				if (SolveBacktracking()) { return true; }
+			}
+		}
+	}
+
+	*board = savedBoard;
 	return false;
+}
+
+void SudokuSolver::PopulateStrategies()
+{
+	strategies.push_back(std::make_unique<NakedSingleStrategy>());
+	strategies.push_back(std::make_unique<HiddenSingleStrategy>());
+	strategies.push_back(std::make_unique<PointingPairTripleStrategy>());
+	strategies.push_back(std::make_unique<ClaimingPairTripleStrategy>());
+	strategies.push_back(std::make_unique<NakedPairStrategy>());
+	strategies.push_back(std::make_unique<HiddenPairStrategy>());
+	strategies.push_back(std::make_unique<NakedTripleStrategy>());
 }

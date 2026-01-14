@@ -6,28 +6,32 @@
 
 class SudokuBoard;
 
+/**
+* Class used to solve sudokus using human-like solving strategies with a backtracking solver as fallback.
+*/
 class SudokuSolver
 {
 public:
 	SudokuSolver() { PopulateStrategies(); };
 	SudokuSolver(std::shared_ptr<SudokuBoard> brd) { SetBoard(brd); PopulateStrategies(); };
 
+	/** Solve the provided sudoku board. */
+	bool Solve();
+	
+	/** Updates the board used by the solver to the provided one. */
+	void SetBoard(std::shared_ptr<SudokuBoard> newBoard) { board = newBoard; }
+
+private:
+	/** Solve the sudoku with human-like solving techniques only. */
+	bool SolveLogical();
+	/** Solve the sudoku with backtracking. */
+	bool SolveBacktracking();
+
+	/** Populate the strategies vector with human-like solving techniques. TODO: settings to enable / disable certain types of techniques.*/
 	void PopulateStrategies();
 
-	bool Solve();
-
-	// Old backtracking solve - also needs updating later but low prio as eventually i dont want to use this anymore
-	bool SolveBoard();
-	
-	// Setters //
-	void SetBoard(std::shared_ptr<SudokuBoard> newBoard) { board = newBoard; }
-private:
-	bool IsValid(const int& row, const int& col, const int& num); // to be removed
-	bool FindEmptyCell(int& row, int& col);
 private:
 	std::shared_ptr<SudokuBoard> board = nullptr;
 
 	std::vector<std::unique_ptr<SolveStrategy>> strategies;
-
-	// TODO: solver settings (e.g. enable / disable certain types of solving algorithms)
 };
