@@ -20,9 +20,12 @@ bool NakedSingleStrategy::Apply(SudokuBoard& board)
 				{
 					if (cell.candidates.test(num))
 					{
-						board.PlaceNumber(row, col, num + 1);
-						std::cout << "Naked Single: " << (num + 1) << " from (" << row << "," << col << "\n";
-						return true;
+						if (board.PlaceNumber(row, col, num + 1))
+						{
+							std::cout << "Naked Single: " << (num + 1) << " from (" << (row + 1) << "," << (col + 1) << ")\n";
+						
+							return true;
+						}
 					}
 				}
 			}
@@ -60,9 +63,12 @@ bool HiddenSingleStrategy::CheckRows(SudokuBoard& board)
 
 			if (foundCol != -1)
 			{
-				board.PlaceNumber(row, foundCol, num);
-				std::cout << "Hidden Single: " << num << " from (" << row << "," << foundCol << "\n";
-				return true;
+				if (board.PlaceNumber(row, foundCol, num))
+				{
+					std::cout << "Hidden Single: " << num << " from (" << (row + 1) << "," << (foundCol + 1) << ")\n";
+				
+					return true;
+				}
 			}
 		}
 	}
@@ -98,9 +104,12 @@ bool HiddenSingleStrategy::CheckColumns(SudokuBoard& board)
 
 			if (foundRow != -1)
 			{
-				std::cout << "Hidden Single: " << num << " from (" << foundRow << "," << col << "\n";
-				board.PlaceNumber(foundRow, col, num);
-				return true;
+				if (board.PlaceNumber(foundRow, col, num))
+				{
+					std::cout << "Hidden Single: " << num << " from (" << (foundRow + 1) << "," << (col + 1) << ")\n";
+				
+					return true;
+				}
 			}
 		}
 	}
@@ -147,9 +156,12 @@ bool HiddenSingleStrategy::CheckBoxes(SudokuBoard& board)
 
 				if (foundRow != -1)
 				{
-					std::cout << "Hidden Single: " << num << " from (" << foundRow << "," << foundCol << "\n";
-					board.PlaceNumber(foundRow, foundCol, num);
-					return true;
+					if (board.PlaceNumber(foundRow, foundCol, num))
+					{
+						std::cout << "Hidden Single: " << num << " from (" << (foundRow + 1) << "," << (foundCol + 1) << ")\n";
+					
+						return true;
+					}
 				}
 
 			next_number:;
@@ -164,7 +176,6 @@ bool HiddenSingleStrategy::CheckBoxes(SudokuBoard& board)
 bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
 {
 	auto& grid = board.GetBoard();
-	bool changed = false;
 
 	for (int br = 0; br < 3; br++)
 	{
@@ -202,9 +213,12 @@ bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
 
 						if (col / 3 != bc && cell.value == 0 && cell.candidates.test(num - 1))
 						{
-							std::cout << "Locked candidate eliminated (point): " << num << " from (" << targetRow << "," << col << "\n";
-							board.RemoveCandidate(targetRow, col, num);
-							changed = true;
+							if (board.RemoveCandidate(targetRow, col, num))
+							{
+								std::cout << "Pointing pair/triple: candidate eliminated: " << num << " from (" << (targetRow + 1) << "," << (col + 1) << ")\n";
+							
+								return true;
+							}
 						}
 					}
 				}
@@ -214,13 +228,13 @@ bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
 		}
 	}
 
-	return changed;
+	// No pointing pair found
+	return false;
 }
 
 bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 {
 	auto& grid = board.GetBoard();
-	bool changed = false;
 
 	for (int bc = 0; bc < 3; bc++)
 	{
@@ -258,9 +272,13 @@ bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 
 						if (row / 3 != br && cell.value == 0 && cell.candidates.test(num - 1))
 						{
-							std::cout << "Locked candidate eliminated (point): " << num << " from (" << row << "," << targetCol << "\n";
-							board.RemoveCandidate(row, targetCol, num);
-							changed = true;
+							
+							if (board.RemoveCandidate(row, targetCol, num))
+							{
+								std::cout << "Pointing pair/triple: candidate eliminated: " << num << " from (" << (row + 1) << "," << (targetCol + 1) << ")\n";
+							
+								return true;
+							}
 						}
 					}
 				}
@@ -270,13 +288,13 @@ bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 		}
 	}
 
-	return changed;
+	// No pointing pair found
+	return false;
 }
 
 bool ClaimingPairTripleStrategy::ClaimFromRows(SudokuBoard& board)
 {
 	const auto& grid = board.GetBoard();
-	bool changed = false;
 
 	for (int row = 0; row < 9; row++)
 	{
@@ -317,9 +335,12 @@ bool ClaimingPairTripleStrategy::ClaimFromRows(SudokuBoard& board)
 						const Cell& cell = grid[rr][cc];
 						if (cell.value == 0 && cell.candidates.test(num - 1))
 						{
-							std::cout << "Locked candidate eliminated (claim): " << num << " from (" << row << "," << cc << "\n";
-							board.RemoveCandidate(rr, cc, num);
-							changed = true;
+							if (board.RemoveCandidate(rr, cc, num))
+							{
+								std::cout << "Claiming pair/triple: candidate eliminated: " << num << " from (" << (row + 1) << "," << (cc + 1) << ")\n";
+							
+								return true;
+							}
 						}
 					}
 				}
@@ -329,13 +350,13 @@ bool ClaimingPairTripleStrategy::ClaimFromRows(SudokuBoard& board)
 		}
 	}
 
-	return changed;
+	// No claiming pair found
+	return false;
 }
 
 bool ClaimingPairTripleStrategy::ClaimFromColumns(SudokuBoard& board)
 {
 	const auto& grid = board.GetBoard();
-	bool changed = false;
 
 	for (int col = 0; col < 9; col++)
 	{
@@ -376,9 +397,12 @@ bool ClaimingPairTripleStrategy::ClaimFromColumns(SudokuBoard& board)
 						const Cell& cell = grid[rr][cc];
 						if (cell.value == 0 && cell.candidates.test(num - 1))
 						{
-							std::cout << "Locked candidate eliminated (claim): " << num << " from (" << rr << "," << col << "\n";
-							board.RemoveCandidate(rr, cc, num);
-							changed = true;
+							if (board.RemoveCandidate(rr, cc, num))
+							{
+								std::cout << "Claiming pair/triple: candidate eliminated: " << num << " from (" << (rr + 1) << "," << (col + 1) << ")\n";
+							
+								return true;
+							}
 						}
 					}
 				}
@@ -388,5 +412,131 @@ bool ClaimingPairTripleStrategy::ClaimFromColumns(SudokuBoard& board)
 		}
 	}
 
-	return changed;
+	// No claiming pair found
+	return false;
+}
+
+bool NakedPairStrategy::Apply(SudokuBoard& board)
+{
+	const auto& grid = board.GetBoard();
+
+	for (UnitType type : {UnitType::Row, UnitType::Column, UnitType::Box})
+	{
+		for (int unit = 0; unit < 9; unit++)
+		{
+			auto cells = GetUnit(type, unit);
+
+			for (size_t i = 0; i < cells.size(); i++)
+			{
+				int r1 = cells[i].first;
+				int c1 = cells[i].second;
+				const Cell& cell1 = grid[r1][c1];
+
+				if (cell1.value != 0 || cell1.candidates.count() != 2) { continue; }
+
+				for (size_t j = i + 1; j < cells.size(); j++)
+				{
+					int r2 = cells[j].first;
+					int c2 = cells[j].second;
+					const Cell& cell2 = grid[r2][c2];
+
+					if (cell2.value != 0) { continue; }
+
+					if (cell1.candidates == cell2.candidates)
+					{
+						// Found naked pair
+						for (const auto& cell : cells)
+						{
+							int r = cell.first;
+							int c = cell.second;
+
+							if ((r == r1 && c == c1) || (r == r2 && c == c2)) { continue; }
+
+							for (int num = 1; num <= 9; num++)
+							{
+								if (cell1.candidates.test(num - 1))
+								{
+									if (board.RemoveCandidate(r, c, num))
+									{
+										std::cout << "Naked pair: candidate eliminated: " << num << " from (" << (r + 1) << "," << (c + 1) << ")\n";
+
+										return true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// No naked pair found
+	return false;
+}
+
+bool HiddenPairStrategy::Apply(SudokuBoard& board)
+{
+	const auto& grid = board.GetBoard();
+
+	for (UnitType type : {UnitType::Row, UnitType::Column, UnitType::Box})
+	{
+		for (int unit = 0; unit < 9; unit++)
+		{
+			auto cells = GetUnit(type, unit);
+
+			for (int a = 1; a <= 8; a++)
+			{
+				for (int b = a + 1; b <= 9; b++)
+				{
+					std::vector<CellPos> aCells;
+					std::vector<CellPos> bCells;
+
+					for (const auto& cellPair : cells)
+					{
+						int r = cellPair.first;
+						int c = cellPair.second;
+
+						const Cell& cell = grid[r][c];
+						if (cell.value != 0) continue;
+
+						if (cell.candidates.test(a - 1))
+							aCells.emplace_back(r, c);
+						if (cell.candidates.test(b - 1))
+							bCells.emplace_back(r, c);
+					}
+
+					if (aCells.size() == 2 &&
+						bCells.size() == 2 &&
+						aCells == bCells)
+					{
+						// Found hidden pair
+						for (const auto& cellPair : aCells)
+						{
+							int r = cellPair.first;
+							int c = cellPair.second;
+
+							const Cell& cell = grid[r][c];
+
+							for (int num = 1; num <= 9; num++)
+							{
+								if (cell.value == 0 && num != a && num != b && cell.candidates.test(num - 1))
+								{
+									if (board.RemoveCandidate(r, c, num))
+									{
+										std::cout << "Hidden pair: candidate eliminated: " << num << " from (" << (r + 1) << "," << (c + 1) << ")\n";
+
+										return true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// No hidden pair found
+	return false;
 }

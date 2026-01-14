@@ -8,6 +8,8 @@ void SudokuSolver::PopulateStrategies()
 	strategies.push_back(std::make_unique<HiddenSingleStrategy>());
 	strategies.push_back(std::make_unique<PointingPairTripleStrategy>());
 	strategies.push_back(std::make_unique<ClaimingPairTripleStrategy>());
+	strategies.push_back(std::make_unique<NakedPairStrategy>());
+	strategies.push_back(std::make_unique<HiddenPairStrategy>());
 }
 
 bool SudokuSolver::Solve()

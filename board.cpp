@@ -79,7 +79,7 @@ void SudokuBoard::RecomputeAllCandidates()
             else
             {
                 board[i][j].candidates.reset();
-                //board[i][j].candidates.set(board[i][j].value - 1);
+                board[i][j].candidates.set(board[i][j].value - 1);
             }
         }
     }
@@ -99,7 +99,7 @@ void SudokuBoard::UpdateCandidatesAfterMove(int row, int col)
 
     // Set filled space to empty as move has been validated
     board[row][col].candidates.reset();
-    //board[row][col].candidates.set(index);
+    board[row][col].candidates.set(index);
 
     // Row / column
     for (int i = 0; i < boardSize; i++)
@@ -164,7 +164,7 @@ bool SudokuBoard::PlaceNumber(int row, int col, int num)
 
     board[row][col].value = num;
     board[row][col].candidates.reset();
-    //board[row][col].candidates.set(num - 1);
+    board[row][col].candidates.set(num - 1);
 
     UpdateCandidatesAfterMove(row, col);
     return true;
@@ -191,7 +191,7 @@ void SudokuBoard::SetBoard(std::array<std::array<int, 9>, 9>& newBoard)
             if (board[i][j].locked)
             {
                 board[i][j].candidates.reset();
-                //board[i][j].candidates.set(newBoard[i][j] - 1);
+                board[i][j].candidates.set(newBoard[i][j] - 1);
             }
         }
     }

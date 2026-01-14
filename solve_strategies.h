@@ -50,3 +50,22 @@ private:
 	bool ClaimFromRows(SudokuBoard& board);
 	bool ClaimFromColumns(SudokuBoard& board);
 };
+
+/** Solving technique where it finds two cells in a block/row/column only contain 2 candidates of the same kind,
+* eliminating those digits in other cells of the same block/row/column.
+*/
+class NakedPairStrategy : public SolveStrategy
+{
+public:
+	bool Apply(SudokuBoard& board) override;
+};
+
+/** Solving technique where it finds two cells in a block/row/column contain 2 candidates of the same kind,
+* where no other cell in the same block/row/column contains those candidates,
+* eliminating those digits in other cells of the same block/row/column.
+*/
+class HiddenPairStrategy : public SolveStrategy
+{
+public:
+	bool Apply(SudokuBoard& board) override;
+};
