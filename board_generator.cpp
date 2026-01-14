@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <cassert>
 
 static std::mt19937 rng(std::random_device{}());
 
@@ -67,7 +68,8 @@ bool BoardGenerator::SolveBacktrackingCount(SudokuBoard& board, int& solutionCou
 	if (board.IsSolved())
 	{
 		solutionCount++;
-		return solutionCount < 2 || mode == SolveMode::FindOne;
+		//return solutionCount < 2 || mode == SolveMode::FindOne;
+		return true;
 	}
 
 	int row = -1, col = -1;
@@ -75,20 +77,19 @@ bool BoardGenerator::SolveBacktrackingCount(SudokuBoard& board, int& solutionCou
 
 	const auto& grid = board.GetBoard();
 	for (int r = 0; r < 9; r++)
-		for (int c = 0; c < 9; c++)
+	for (int c = 0; c < 9; c++)
+	{
+		if (grid[r][c].value == 0)
 		{
-			const Cell& cell = grid[r][c];
-			if (cell.value == 0)
+			size_t count = grid[r][c].candidates.count();
+			if (count < bestCount)
 			{
-				size_t count = cell.candidates.count();
-				if (count < bestCount)
-				{
-					bestCount = count;
-					row = r;
-					col = c;
-				}
+				bestCount = count;
+				row = r;
+				col = c;
 			}
 		}
+	}
 
 	if (bestCount == 0) { return false; }
 
@@ -106,12 +107,15 @@ bool BoardGenerator::SolveBacktrackingCount(SudokuBoard& board, int& solutionCou
 		SudokuBoard snapshot = board;
 		board.PlaceNumber(row, col, num);
 
-		if (!SolveBacktrackingCount(board, solutionCount, mode)) { return false; }
+		if (SolveBacktrackingCount(board, solutionCount, mode))
+		{
+			if (mode == SolveMode::FindOne) { return true; }
+		}
 
 		board = snapshot;
 
 		if (mode == SolveMode::CountUpToTwo && solutionCount >= 2) { return false; }
 	}
 
-	return true;
+	return false;
 }
