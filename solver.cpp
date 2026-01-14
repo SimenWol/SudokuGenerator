@@ -1,5 +1,6 @@
 #include "solver.h"
 #include "board.h"
+#include <iostream>
 
 void SudokuSolver::PopulateStrategies()
 {
@@ -18,6 +19,7 @@ bool SudokuSolver::Solve()
 		{
 			if (strategy->Apply(*board))
 			{
+				if (board->HasContradiction()) { std::cout << "Contradiction detected!\n\n"; return false; }
 				progress = true;
 				break;
 			}

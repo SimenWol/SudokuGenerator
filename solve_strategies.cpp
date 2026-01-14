@@ -20,7 +20,7 @@ bool NakedSingleStrategy::Apply(SudokuBoard& board)
 					if (cell.candidates.test(num))
 					{
 						board.PlaceNumber(row, col, num + 1);
-						std::cout << "Naked Single: " << num << " from (" << row << "," << col << "\n";
+						std::cout << "Naked Single: " << (num + 1) << " from (" << row << "," << col << "\n";
 						return true;
 					}
 				}
@@ -169,7 +169,7 @@ bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
 	{
 		for (int bc = 0; bc < 3; bc++)
 		{
-			for (int num = 1; num <= 3; num++)
+			for (int num = 1; num <= 9; num++)
 			{
 				int targetRow = -1;
 
@@ -222,7 +222,7 @@ bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 	{
 		for (int br = 0; br < 3; br++)
 		{
-			for (int num = 1; num <= 3; num++)
+			for (int num = 1; num <= 9; num++)
 			{
 				int targetCol = -1;
 
