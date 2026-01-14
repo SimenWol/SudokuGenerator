@@ -38,5 +38,8 @@
     <ClInclude Include="solve_strategies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="unit_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

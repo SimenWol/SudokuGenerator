@@ -1,4 +1,5 @@
 #pragma once
+// Helpful resource: https://hodoku.sourceforge.net/en/techniques.php
 
 class SudokuBoard;
 
@@ -26,7 +27,9 @@ private:
 	bool CheckBoxes(SudokuBoard& board);
 };
 
-// Pointing pair/triple - WIP
+/** Solving technique where it finds candidates of the same digit that are confined to a row or column within a block,
+* eliminating that digit in the same row/column outside of that block.
+*/
 class PointingPairTripleStrategy : public SolveStrategy
 {
 public:
@@ -36,4 +39,14 @@ private:
 	bool BoxToColumn(SudokuBoard& board);
 };
 
-// TBA claiming pair/triple
+/** Solving technique where it finds candidates of the same digit that are confined to a block within a row/column,
+* eliminating that digit in the same block outside of that row/column.
+*/
+class ClaimingPairTripleStrategy : public SolveStrategy
+{
+public:
+	bool Apply(SudokuBoard& board) override { return ClaimFromRows(board) || ClaimFromColumns(board); }
+private:
+	bool ClaimFromRows(SudokuBoard& board);
+	bool ClaimFromColumns(SudokuBoard& board);
+};

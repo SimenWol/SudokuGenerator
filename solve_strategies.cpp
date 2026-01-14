@@ -1,4 +1,5 @@
 #include "solve_strategies.h"
+#include "unit_helpers.h"
 #include "board.h"
 #include <iostream>
 
@@ -172,6 +173,7 @@ bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
 			for (int num = 1; num <= 9; num++)
 			{
 				int targetRow = -1;
+				int count = 0;
 
 				for (int row = 0; row < 3; row++)
 				{
@@ -186,11 +188,13 @@ bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
 						{
 							if (targetRow == -1) { targetRow = rr; }
 							else if (targetRow != rr) { goto next_number; }
+
+							count++;
 						}
 					}
 				}
 
-				if (targetRow != -1)
+				if (count >= 2 && targetRow != -1)
 				{
 					for (int col = 0; col < board.boardSize; col++)
 					{
@@ -198,7 +202,7 @@ bool PointingPairTripleStrategy::BoxToRow(SudokuBoard& board)
 
 						if (col / 3 != bc && cell.value == 0 && cell.candidates.test(num - 1))
 						{
-							std::cout << "Locked candidate eliminated: " << num << " from (" << targetRow << "," << col << "\n";
+							std::cout << "Locked candidate eliminated (point): " << num << " from (" << targetRow << "," << col << "\n";
 							board.RemoveCandidate(targetRow, col, num);
 							changed = true;
 						}
@@ -225,6 +229,7 @@ bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 			for (int num = 1; num <= 9; num++)
 			{
 				int targetCol = -1;
+				int count = 0;
 
 				for (int col = 0; col < 3; col++)
 				{
@@ -239,11 +244,13 @@ bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 						{
 							if (targetCol == -1) { targetCol = cc; }
 							else if (targetCol != cc) { goto next_number; }
+
+							count++;
 						}
 					}
 				}
 
-				if (targetCol != -1)
+				if (count >= 2 && targetCol != -1)
 				{
 					for (int row = 0; row < board.boardSize; row++)
 					{
@@ -251,7 +258,7 @@ bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 
 						if (row / 3 != br && cell.value == 0 && cell.candidates.test(num - 1))
 						{
-							std::cout << "Locked candidate eliminated: " << num << " from (" << row << "," << targetCol << "\n";
+							std::cout << "Locked candidate eliminated (point): " << num << " from (" << row << "," << targetCol << "\n";
 							board.RemoveCandidate(row, targetCol, num);
 							changed = true;
 						}
@@ -260,6 +267,124 @@ bool PointingPairTripleStrategy::BoxToColumn(SudokuBoard& board)
 
 			next_number:;
 			}
+		}
+	}
+
+	return changed;
+}
+
+bool ClaimingPairTripleStrategy::ClaimFromRows(SudokuBoard& board)
+{
+	const auto& grid = board.GetBoard();
+	bool changed = false;
+
+	for (int row = 0; row < 9; row++)
+	{
+		for (int num = 1; num <= 9; num++)
+		{
+			int targetBox = -1;
+			int count = 0;
+
+			for (int col = 0; col < 9; col++)
+			{
+				const Cell& cell = grid[row][col];
+
+				if (cell.value == 0 && cell.candidates.test(num - 1))
+				{
+					int box = BoxIndex(row, col);
+
+					if (targetBox == -1) { targetBox = box; }
+					else if (targetBox != box) { goto next_number; }
+
+					count++;
+				}
+			}
+
+			if (count >= 2 && targetBox != -1)
+			{
+				int br = (targetBox / 3) * 3;
+				int bc = (targetBox % 3) * 3;
+
+				for (int r = 0; r < 3; r++)
+				{
+					for (int c = 0; c < 3; c++)
+					{
+						int rr = br + r;
+						int cc = bc + c;
+
+						if (rr == row) continue;
+
+						const Cell& cell = grid[rr][cc];
+						if (cell.value == 0 && cell.candidates.test(num - 1))
+						{
+							std::cout << "Locked candidate eliminated (claim): " << num << " from (" << row << "," << cc << "\n";
+							board.RemoveCandidate(rr, cc, num);
+							changed = true;
+						}
+					}
+				}
+			}
+
+		next_number:;
+		}
+	}
+
+	return changed;
+}
+
+bool ClaimingPairTripleStrategy::ClaimFromColumns(SudokuBoard& board)
+{
+	const auto& grid = board.GetBoard();
+	bool changed = false;
+
+	for (int col = 0; col < 9; col++)
+	{
+		for (int num = 1; num <= 9; num++)
+		{
+			int targetBox = -1;
+			int count = 0;
+
+			for (int row = 0; row < 9; row++)
+			{
+				const Cell& cell = grid[row][col];
+
+				if (cell.value == 0 && cell.candidates.test(num - 1))
+				{
+					int box = BoxIndex(row, col);
+
+					if (targetBox == -1) { targetBox = box; }
+					else if (targetBox != box) { goto next_number; }
+
+					count++;
+				}
+			}
+
+			if (count >= 2 && targetBox != -1)
+			{
+				int br = (targetBox / 3) * 3;
+				int bc = (targetBox % 3) * 3;
+
+				for (int r = 0; r < 3; r++)
+				{
+					for (int c = 0; c < 3; c++)
+					{
+						int rr = br + r;
+						int cc = bc + c;
+
+						if (cc == col) continue;
+
+						const Cell& cell = grid[rr][cc];
+						if (cell.value == 0 && cell.candidates.test(num - 1))
+						{
+							std::cout << "Locked candidate eliminated (claim): " << num << " from (" << rr << "," << col << "\n";
+							board.RemoveCandidate(rr, cc, num);
+							changed = true;
+						}
+					}
+				}
+			}
+
+		next_number:;
 		}
 	}
 

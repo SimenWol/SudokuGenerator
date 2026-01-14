@@ -132,6 +132,7 @@
     <ClInclude Include="board.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="solve_strategies.h" />
+    <ClInclude Include="unit_helpers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
