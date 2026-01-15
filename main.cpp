@@ -5,7 +5,6 @@
 #include "board.h"
 #include "solver.h"
 #include "board_generator.h"
-#include "difficulty_classifier.h"
 
 int main()
 {
@@ -16,7 +15,7 @@ int main()
     std::cout << "Generated board:\n\n";
     board->PrintBoard();
 
-    generator.DigPuzzle(*board, 25);
+    generator.DigPuzzle(*board, 25, Difficulty::Hard);
 
     std::cout << "\n\nGenerated puzzle:\n\n";
     board->PrintBoard();
@@ -25,6 +24,7 @@ int main()
     getchar();
 
     SudokuSolver solver(board);
+    DifficultyClassifier difficultyClassifier;
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -36,12 +36,12 @@ int main()
         board->PrintBoard();
 
         std::cout << "\nSolve time (microseconds): " << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << std::endl;
-        PrintDifficulty(ClassifyDifficulty(solver.GetStats()));
+        difficultyClassifier.PrintDifficulty(difficultyClassifier.Classify(solver.GetStats()));
     }
     else
     {
         std::cout << "\nNo solution exists!" << std::endl;
-        PrintDifficulty(ClassifyDifficulty(solver.GetStats()));
+        difficultyClassifier.PrintDifficulty(difficultyClassifier.Classify(solver.GetStats()));
 
         std::cout << "\nSolver got this far:\n\n";
         board->PrintBoard();

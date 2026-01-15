@@ -31,7 +31,7 @@ std::vector<CellPos> BoardGenerator::ShuffledCellList()
 	return cells;
 }
 
-void BoardGenerator::DigPuzzle(SudokuBoard& board, int minClues)
+void BoardGenerator::DigPuzzle(SudokuBoard& board, int minClues, Difficulty targetDifficulty)
 {
 	auto order = ShuffledCellList();
 
@@ -43,7 +43,7 @@ void BoardGenerator::DigPuzzle(SudokuBoard& board, int minClues)
 		board.SetValue(r, c, 0);
 		board.RecomputeAllCandidates();
 
-		if (!HasUniqueSolution(board) || board.CountClues() < minClues)
+		if (!HasUniqueSolution(board) || !IsAcceptablePuzzle(board, targetDifficulty) || board.CountClues() < minClues)
 		{
 			board.SetValue(r, c, backup);
 			board.RecomputeAllCandidates();
@@ -118,4 +118,17 @@ bool BoardGenerator::SolveBacktrackingCount(SudokuBoard& board, int& solutionCou
 	}
 
 	return false;
+}
+
+bool BoardGenerator::IsAcceptablePuzzle(const SudokuBoard& puzzle, Difficulty target)
+{
+	auto board = std::make_shared<SudokuBoard>(puzzle);
+	SudokuSolver solver(board);
+
+	if (!solver.Solve(false)) { return false; }
+
+	DifficultyClassifier difficultyClassifier;
+	Difficulty actual = difficultyClassifier.Classify(solver.GetStats());
+
+	return actual <= target;
 }
