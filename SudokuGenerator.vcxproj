@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="board.h" />
     <ClInclude Include="board_generator.h" />
+    <ClInclude Include="difficulty_classifier.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="solve_strategies.h" />
     <ClInclude Include="unit_helpers.h" />

@@ -5,6 +5,7 @@
 #include "board.h"
 #include "solver.h"
 #include "board_generator.h"
+#include "difficulty_classifier.h"
 
 int main()
 {
@@ -35,10 +36,12 @@ int main()
         board->PrintBoard();
 
         std::cout << "\nSolve time (microseconds): " << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << std::endl;
+        PrintDifficulty(ClassifyDifficulty(solver.GetStats()));
     }
     else
     {
         std::cout << "\nNo solution exists!" << std::endl;
+        PrintDifficulty(ClassifyDifficulty(solver.GetStats()));
 
         std::cout << "\nSolver got this far:\n\n";
         board->PrintBoard();
