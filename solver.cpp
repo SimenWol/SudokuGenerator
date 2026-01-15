@@ -4,15 +4,15 @@
 
 bool SudokuSolver::Solve(bool UseBacktrackingWhenStuck)
 {
-	if (SolveLogical())
-	{
-		if (board->IsSolved()) { return true; }
+	if (!SolveLogical()) { return false; }
+	
+	if (board->IsSolved()) { return true; }
 
-		if (UseBacktrackingWhenStuck)
-		{
-			std::cout << "\n\nLogical solve failed, using backtracking fallback now.\n\n";
-			return SolveBacktracking();
-		}
+	if (UseBacktrackingWhenStuck)
+	{
+		std::cout << "\n\nLogical solve failed, using backtracking fallback now.\n\n";
+		stats.usedBacktracking = true;
+		return SolveBacktracking();
 	}
 
 	return false;
@@ -30,6 +30,7 @@ bool SudokuSolver::SolveLogical()
 			{
 				if (board->HasContradiction()) { std::cout << "Contradiction detected!\n\n"; return false; }
 				
+				stats.Record(strategy->GetType());
 				progress = true;
 				break;
 			}
